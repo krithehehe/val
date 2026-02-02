@@ -9,23 +9,34 @@
 
 <style>
 :root {
-  --bg1:#ffd6e7; --bg2:#ffeef6; --card:#ffffffcc;
-  --yes:#ff3b7a; --yesHover:#ff1f68;
+  --bg1:#ffd6e7;
+  --bg2:#ffeef6;
+  --card:#ffffffcc;
+  --yes:#ff3b7a;
+  --yesHover:#ff1f68;
 }
 
-*{box-sizing:border-box}
+* { box-sizing: border-box; }
 
-body{
-  margin:0; min-height:100svh; display:grid; place-items:center;
+body {
+  margin:0;
+  min-height:100svh;
+  display:grid;
+  place-items:center;
   background:radial-gradient(circle at top,var(--bg2),var(--bg1));
-  font-family:system-ui,sans-serif; overflow:hidden; padding:16px;
+  font-family:system-ui,sans-serif;
+  overflow:hidden;
+  padding:16px;
 }
 
-#confettiCanvas{
-  position:fixed; inset:0; pointer-events:none; z-index:9999;
+#confettiCanvas {
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:9999;
 }
 
-.card{
+.card {
   width:min(720px,92vw);
   padding:26px 22px;
   background:var(--card);
@@ -35,21 +46,24 @@ body{
   box-shadow:0 18px 60px rgba(0,0,0,.15);
 }
 
-.art{
-  width:min(300px,90vw);
-  margin:auto;
+.art {
+  width:320px;
+  margin:0 auto 10px;
+  display:block;
 }
 
-h1{font-size:clamp(26px,4vw,44px)}
+h1 {
+  font-size:clamp(26px,4vw,44px);
+}
 
-.button-zone{
+.button-zone {
   position:relative;
   width:min(520px,92%);
   height:150px;
   margin:20px auto;
 }
 
-button{
+button {
   position:absolute;
   top:50%;
   transform:translateY(-50%);
@@ -62,35 +76,26 @@ button{
   box-shadow:0 10px 24px rgba(0,0,0,.14);
 }
 
-#yesBtn{left:18%; background:var(--yes); color:#fff}
-#yesBtn:hover{background:var(--yesHover)}
+#yesBtn {
+  left:18%;
+  background:var(--yes);
+  color:#fff;
+}
+#yesBtn:hover { background:var(--yesHover); }
 
-#noBtn{left:62%; background:#e5e7eb}
-
-.hint{font-size:13px; opacity:.7}
-
-.result{display:none}
-.result h2{font-size:40px}
-
-/* ---- SVG ANIMATION ---- */
-@keyframes steal {
-  0% {transform:translateX(0)}
-  60% {transform:translateX(40px)}
-  100% {transform:translateX(40px)}
+#noBtn {
+  left:62%;
+  background:#e5e7eb;
 }
 
-@keyframes bounce {
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-6px)}
+.hint {
+  font-size:13px;
+  opacity:.7;
 }
 
-@keyframes blush {
-  to {opacity:1}
+.result {
+  display:none;
 }
-
-.monkey-hand {animation:steal 2s ease forwards 1.2s}
-.monkey {animation:bounce .6s ease infinite 3s}
-.pig-blush {opacity:0; animation:blush .6s forwards 2s}
 
 /* 🐵🐷 SVG ANIMATION */
 #hand {
@@ -102,31 +107,27 @@ button{
 }
 
 .blush {
-  opacity: 0;
-  animation: blushOn 0.6s ease forwards 2.6s;
+  opacity:0;
+  animation: blushOn .6s ease forwards 2.6s;
 }
 
 @keyframes stealHeart {
-  to { width: 65px; }
+  to { width:70px; }
 }
 
 @keyframes heartMove {
-  to { transform: translateX(45px); }
+  to { transform: translateX(50px); }
 }
 
 @keyframes blushOn {
-  to { opacity: 1; }
+  to { opacity:1; }
 }
-
 </style>
 </head>
 
 <body>
 
-<canvas> <audio id="heartbeat" src="https://assets.mixkit.co/sfx/preview/mixkit-heartbeat-fast-485.mp3" loop></audio>
-<audio id="pop" src="https://assets.mixkit.co/sfx/preview/mixkit-balloon-pop-2073.mp3"></audio>
-<audio id="yay" src="https://assets.mixkit.co/sfx/preview/mixkit-animated-small-group-applause-523.mp3"></audio>
-id="confettiCanvas" </canvas>
+<canvas id="confettiCanvas"></canvas>
 
 <!-- 🔊 SOUNDS -->
 <audio id="heartbeat" src="https://assets.mixkit.co/sfx/preview/mixkit-heartbeat-fast-485.mp3" loop></audio>
@@ -136,9 +137,8 @@ id="confettiCanvas" </canvas>
 <main class="card">
 
 <!-- 🐵🐷 SVG -->
-<svg class="art" viewBox="0 0 360 240" xmlns="http://www.w3.org/2000/svg">
+<svg class="art" viewBox="0 0 360 240">
 
-  <!-- HEART -->
   <g id="heart">
     <path d="M180 55
              C180 35 205 30 215 45
@@ -148,7 +148,6 @@ id="confettiCanvas" </canvas>
           fill="#ff3b7a"/>
   </g>
 
-  <!-- PIG -->
   <g id="pig">
     <circle cx="110" cy="150" r="38" fill="#ffb6c1"/>
     <circle cx="95" cy="145" r="6"/>
@@ -158,20 +157,16 @@ id="confettiCanvas" </canvas>
     <circle class="blush" cx="130" cy="160" r="6" fill="#ff6f91"/>
   </g>
 
-  <!-- MONKEY -->
   <g id="monkey">
     <circle cx="250" cy="150" r="38" fill="#c68642"/>
     <circle cx="235" cy="145" r="6"/>
     <circle cx="265" cy="145" r="6"/>
-    <!-- HAND -->
     <rect id="hand" x="215" y="145" width="0" height="10" rx="5" fill="#c68642"/>
   </g>
 
 </svg>
 
-
-
-<h1>Mithun will you be my valentine?</h1>
+<h1>Mithun will you be my Valentine?</h1>
 
 <section class="button-zone" id="zone">
   <button id="yesBtn">Yes</button>
@@ -193,15 +188,16 @@ const noBtn = document.getElementById("noBtn");
 const result = document.getElementById("result");
 const hint = document.getElementById("hint");
 
+const heartbeat = document.getElementById("heartbeat");
 const pop = document.getElementById("pop");
 const yay = document.getElementById("yay");
-const heart = document.getElementById("heartbeat");
 
-heart.volume = .2;
-document.body.addEventListener("click",()=>heart.play(),{once:true});
+/* allow audio after first click */
+document.body.addEventListener("click", () => {
+  heartbeat.volume = 0.2;
+  heartbeat.play();
+}, { once:true });
 
-/* 🧠 FAKE NO FLOW */
-let noCount = 0;
 let noClicks = 0;
 
 noBtn.addEventListener("click", e => {
@@ -210,21 +206,10 @@ noBtn.addEventListener("click", e => {
   pop.play();
   noClicks++;
 
-  if (noClicks === 1) {
-    noBtn.textContent = "Are you sure? 🤨";
-  } else if (noClicks === 2) {
-    noBtn.textContent = "Try again 😏";
-  }
+  if (noClicks === 1) noBtn.textContent = "Are you sure? 🤨";
+  else if (noClicks === 2) noBtn.textContent = "Try again 😏";
 });
 
-  noCount++;
-  pop.currentTime=0; pop.play();
-
-  if(noCount===1) noBtn.textContent="Are you sure? 🤨";
-  else if(noCount===2) noBtn.textContent="Try again 😏";
-});
-
-/* 🏃 NO RUNS */
 zone.addEventListener("pointermove", e => {
   if (noClicks < 2) return;
 
@@ -232,30 +217,25 @@ zone.addEventListener("pointermove", e => {
   const z = zone.getBoundingClientRect();
 
   const d = Math.hypot(
-    (b.left + b.width / 2) - e.clientX,
-    (b.top + b.height / 2) - e.clientY
+    (b.left + b.width/2) - e.clientX,
+    (b.top + b.height/2) - e.clientY
   );
 
   if (d < 140) {
-    noBtn.style.left = Math.random() * (z.width - b.width) + "px";
-    noBtn.style.top  = Math.random() * (z.height - b.height) + "px";
-    growYes();
+    noBtn.style.left = Math.random()*(z.width - b.width) + "px";
+    noBtn.style.top  = Math.random()*(z.height - b.height) + "px";
+    yesBtn.style.transform = "translateY(-50%) scale(1.2)";
   }
 });
 
-
-/* 🎉 YES */
-yesBtn.addEventListener("click",()=>{
-  zone.style.display="none";
-  hint.style.display="none";
-  result.style.display="block";
+yesBtn.addEventListener("click", () => {
+  zone.style.display = "none";
+  hint.style.display = "none";
+  result.style.display = "block";
   yay.play();
-  confetti({particleCount:250,spread:140});
-  yay.play();
-
+  confetti({ particleCount:300, spread:140 });
 });
 </script>
 
 </body>
 </html>
-
