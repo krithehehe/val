@@ -92,12 +92,41 @@ button{
 .monkey {animation:bounce .6s ease infinite 3s}
 .pig-blush {opacity:0; animation:blush .6s forwards 2s}
 
+/* 🐵🐷 SVG ANIMATION */
+#hand {
+  animation: stealHeart 2s ease forwards 1.5s;
+}
+
+#heart {
+  animation: heartMove 2s ease forwards 1.5s;
+}
+
+.blush {
+  opacity: 0;
+  animation: blushOn 0.6s ease forwards 2.6s;
+}
+
+@keyframes stealHeart {
+  to { width: 65px; }
+}
+
+@keyframes heartMove {
+  to { transform: translateX(45px); }
+}
+
+@keyframes blushOn {
+  to { opacity: 1; }
+}
+
 </style>
 </head>
 
 <body>
 
-<canvas id="confettiCanvas"></canvas>
+<canvas> <audio id="heartbeat" src="https://assets.mixkit.co/sfx/preview/mixkit-heartbeat-fast-485.mp3" loop></audio>
+<audio id="pop" src="https://assets.mixkit.co/sfx/preview/mixkit-balloon-pop-2073.mp3"></audio>
+<audio id="yay" src="https://assets.mixkit.co/sfx/preview/mixkit-animated-small-group-applause-523.mp3"></audio>
+id="confettiCanvas" </canvas>
 
 <!-- 🔊 SOUNDS -->
 <audio id="heartbeat" src="https://assets.mixkit.co/sfx/preview/mixkit-heartbeat-fast-485.mp3" loop></audio>
@@ -107,32 +136,40 @@ button{
 <main class="card">
 
 <!-- 🐵🐷 SVG -->
-<svg class="art" viewBox="0 0 320 220">
+<svg class="art" viewBox="0 0 360 240" xmlns="http://www.w3.org/2000/svg">
+
   <!-- HEART -->
-  <path d="M160 40 C160 25 180 20 190 30
-           C200 20 220 25 220 40
-           C220 65 190 75 190 90
-           C190 75 160 65 160 40Z"
-        fill="#ff4d7d"/>
-
-  <!-- PIG -->
-  <circle cx="110" cy="140" r="40" fill="#ffb6c1"/>
-  <circle cx="95" cy="135" r="6"/>
-  <circle cx="125" cy="135" r="6"/>
-  <circle cx="110" cy="150" r="10" fill="#ff8fab"/>
-  <circle class="pig-blush" cx="90" cy="150" r="6" fill="#ff6f91"/>
-  <circle class="pig-blush" cx="130" cy="150" r="6" fill="#ff6f91"/>
-
-  <!-- MONKEY -->
-  <g class="monkey">
-    <circle cx="210" cy="140" r="40" fill="#c68642"/>
-    <circle cx="195" cy="135" r="6"/>
-    <circle cx="225" cy="135" r="6"/>
+  <g id="heart">
+    <path d="M180 55
+             C180 35 205 30 215 45
+             C225 30 250 35 250 55
+             C250 80 215 95 215 115
+             C215 95 180 80 180 55Z"
+          fill="#ff3b7a"/>
   </g>
 
-  <!-- MONKEY HAND -->
-  <rect class="monkey-hand" x="200" y="110" width="60" height="10" rx="5" fill="#c68642"/>
+  <!-- PIG -->
+  <g id="pig">
+    <circle cx="110" cy="150" r="38" fill="#ffb6c1"/>
+    <circle cx="95" cy="145" r="6"/>
+    <circle cx="125" cy="145" r="6"/>
+    <ellipse cx="110" cy="160" rx="10" ry="7" fill="#ff8fab"/>
+    <circle class="blush" cx="90" cy="160" r="6" fill="#ff6f91"/>
+    <circle class="blush" cx="130" cy="160" r="6" fill="#ff6f91"/>
+  </g>
+
+  <!-- MONKEY -->
+  <g id="monkey">
+    <circle cx="250" cy="150" r="38" fill="#c68642"/>
+    <circle cx="235" cy="145" r="6"/>
+    <circle cx="265" cy="145" r="6"/>
+    <!-- HAND -->
+    <rect id="hand" x="215" y="145" width="0" height="10" rx="5" fill="#c68642"/>
+  </g>
+
 </svg>
+
+
 
 <h1>Mithun will you be my valentine?</h1>
 
@@ -165,8 +202,21 @@ document.body.addEventListener("click",()=>heart.play(),{once:true});
 
 /* 🧠 FAKE NO FLOW */
 let noCount = 0;
-noBtn.addEventListener("click", e=>{
+let noClicks = 0;
+
+noBtn.addEventListener("click", e => {
   e.preventDefault();
+  pop.currentTime = 0;
+  pop.play();
+  noClicks++;
+
+  if (noClicks === 1) {
+    noBtn.textContent = "Are you sure? 🤨";
+  } else if (noClicks === 2) {
+    noBtn.textContent = "Try again 😏";
+  }
+});
+
   noCount++;
   pop.currentTime=0; pop.play();
 
@@ -175,16 +225,24 @@ noBtn.addEventListener("click", e=>{
 });
 
 /* 🏃 NO RUNS */
-zone.addEventListener("pointermove",e=>{
-  if(noCount<2) return;
-  const b=noBtn.getBoundingClientRect();
-  const z=zone.getBoundingClientRect();
-  if(Math.hypot(b.left-e.clientX,b.top-e.clientY)<140){
-    noBtn.style.left=Math.random()*(z.width-100)+"px";
-    noBtn.style.top=Math.random()*(z.height-40)+"px";
-    yesBtn.style.transform="translateY(-50%) scale(1.2)";
+zone.addEventListener("pointermove", e => {
+  if (noClicks < 2) return;
+
+  const b = noBtn.getBoundingClientRect();
+  const z = zone.getBoundingClientRect();
+
+  const d = Math.hypot(
+    (b.left + b.width / 2) - e.clientX,
+    (b.top + b.height / 2) - e.clientY
+  );
+
+  if (d < 140) {
+    noBtn.style.left = Math.random() * (z.width - b.width) + "px";
+    noBtn.style.top  = Math.random() * (z.height - b.height) + "px";
+    growYes();
   }
 });
+
 
 /* 🎉 YES */
 yesBtn.addEventListener("click",()=>{
@@ -193,8 +251,11 @@ yesBtn.addEventListener("click",()=>{
   result.style.display="block";
   yay.play();
   confetti({particleCount:250,spread:140});
+  yay.play();
+
 });
 </script>
 
 </body>
 </html>
+
