@@ -1,408 +1,143 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Will you be my Valentine?</title>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-
-  <style>
-    :root {
-      --bg1: #ffd6e7;
-      --bg2: #ffeef6;
-      --card: #ffffffcc;
-      --yes: #ff3b7a;
-      --yesHover: #ff1f68;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100svh;
-      display: grid;
-      place-items: center;
-      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
-      font-family: system-ui, sans-serif;
-      overflow: hidden;
-      padding: 16px;
-    }
-
-    #confettiCanvas {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 9999;
-    }
-
-    .card {
-      width: min(720px, 92vw);
-      padding: 26px 22px;
-      background: var(--card);
-      backdrop-filter: blur(10px);
-      border-radius: 22px;
-      text-align: center;
-      box-shadow: 0 18px 60px rgba(0,0,0,.15);
-    }
-
-    .art {
-      width: min(320px, 82vw);
-      margin: 0 auto 10px;
-      display: block;
-      filter: drop-shadow(0 10px 14px rgba(0,0,0,.12));
-    }
-
-    .blink {
-      transform-origin: center;
-      animation: blink 3.8s infinite;
-    }
-
-    #heartGroup {
-      transform-origin: 160px 42px;
-      animation: floatHeart 1.4s ease-in-out infinite;
-      transition: transform .6s ease, opacity .5s ease;
-    }
-
-    #heartGroup.stolen {
-      transform: translate(68px, 18px) rotate(18deg) scale(.92);
-    }
-
-    #monkeyBlush {
-      opacity: 0;
-      transition: opacity .35s ease;
-    }
-
-    #monkeyBlush.active {
-      opacity: .75;
-    }
-
-    h1 {
-      font-size: clamp(26px, 4vw, 44px);
-      margin: 12px 0 18px;
-    }
-
-    .button-zone {
-      position: relative;
-      width: min(520px, 92%);
-      height: 150px;
-      margin: 0 auto;
-      touch-action: none;
-    }
-
-    button {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      padding: 16px 24px;
-      font-size: 18px;
-      font-weight: 800;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 10px 24px rgba(0,0,0,.14);
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform .12s ease, background .12s ease;
-    }
-
-    #yesBtn {
-      left: 18%;
-      background: var(--yes);
-      color: #fff;
-    }
-    #yesBtn:hover { background: var(--yesHover); }
-
-    #noBtn {
-      left: 62%;
-      background: #e5e7eb;
-      color: #111827;
-    }
-
-    .hint {
-      margin-top: 10px;
-      font-size: 13px;
-      opacity: .8;
-      min-height: 20px;
-    }
-
-    .result {
-      display: none;
-      margin-top: 18px;
-      animation: pop .35s ease;
-    }
-
-    .result h2 {
-      font-size: clamp(30px, 4.5vw, 46px);
-      margin: 10px 0;
-    }
-
-    .fireworks {
-      width: min(380px, 90vw);
-      margin: 0 auto;
-      display: block;
-    }
-
-    @keyframes pop {
-      from { transform: scale(.96); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    @keyframes blink {
-      0%, 46%, 52%, 100% { transform: scaleY(1); }
-      48%, 50% { transform: scaleY(.1); }
-    }
-
-    @keyframes floatHeart {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
-  </style>
-</head>
-
-<body>
-  <canvas id="confettiCanvas"></canvas>
-
-  <main class="card">
-    <svg class="art" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" aria-label="Pig and monkey with heart">
-      <defs>
-        <linearGradient id="pigSkin" x1="0" x2="1">
-          <stop offset="0" stop-color="#ffbfd2"/>
-          <stop offset="1" stop-color="#ff9fbf"/>
-        </linearGradient>
-        <linearGradient id="monkeyFur" x1="0" x2="1">
-          <stop offset="0" stop-color="#c88a56"/>
-          <stop offset="1" stop-color="#9a6137"/>
-        </linearGradient>
-        <linearGradient id="heart" x1="0" x2="1">
-          <stop offset="0" stop-color="#ff4d7d"/>
-          <stop offset="1" stop-color="#ff1f68"/>
-        </linearGradient>
-      </defs>
-
-      <g id="heartGroup">
-        <path d="M145 42 C145 28 162 22 170 34 C178 22 195 28 195 42 C195 66 170 79 170 90 C170 79 145 66 145 42Z" fill="url(#heart)"/>
-      </g>
-
-      <g id="pig" transform="translate(38 84)">
-        <circle cx="62" cy="58" r="48" fill="url(#pigSkin)"/>
-        <ellipse cx="62" cy="68" rx="18" ry="13" fill="#f783a6"/>
-        <circle cx="56" cy="68" r="3" fill="#933"/>
-        <circle cx="68" cy="68" r="3" fill="#933"/>
-        <path d="M28 36 L18 16 L41 26 Z" fill="#ff9fbf"/>
-        <path d="M96 36 L106 16 L83 26 Z" fill="#ff9fbf"/>
-        <circle class="blink" cx="48" cy="55" r="4" fill="#2a1d1d"/>
-        <circle class="blink" cx="77" cy="55" r="4" fill="#2a1d1d"/>
-      </g>
-
-      <g id="monkey" transform="translate(176 82)">
-        <circle cx="62" cy="58" r="50" fill="url(#monkeyFur)"/>
-        <ellipse cx="62" cy="66" rx="26" ry="20" fill="#f3cda8"/>
-        <circle cx="44" cy="56" r="4" fill="#181818" class="blink"/>
-        <circle cx="79" cy="56" r="4" fill="#181818" class="blink"/>
-        <path d="M56 73 Q62 79 68 73" stroke="#4d2c14" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <circle cx="24" cy="54" r="12" fill="#a06a3f"/>
-        <circle cx="99" cy="54" r="12" fill="#a06a3f"/>
-        <ellipse id="monkeyBlush" cx="62" cy="74" rx="32" ry="10" fill="#ff6f91"/>
-      </g>
-    </svg>
-
-    <h1>Mithun will you be my valentine?</h1>
-
-    <section class="button-zone" id="zone">
-      <button id="yesBtn">Yes</button>
-      <button id="noBtn">No</button>
-    </section>
-
-    <div class="hint" id="hint">“No” is not an option 🙄</div>
-
-    <section class="result" id="result">
-      <h2>YAYYY!🥳</h2>
-      <img
-        class="fireworks"
-        src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcTRycDh4NHQ3aTh6NWFhM3NkMTZ3eWhlc3NidzdwY2FscTVxMXRobiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/IzXiddo2twMmdmU8Lv/giphy.gif"
-        alt="Fireworks"
-      />
-    </section>
-  </main>
-
-  <script>
-    const zone = document.getElementById("zone");
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
-    const result = document.getElementById("result");
-    const hint = document.getElementById("hint");
-    const heartGroup = document.getElementById("heartGroup");
-    const monkeyBlush = document.getElementById("monkeyBlush");
-
-    const noStages = ["No", "Are you sure?", "Try again 😏"];
-    let noStage = 0;
-
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    function chirp({ startFreq, endFreq, duration = 0.18, type = "sine", gain = 0.14 }) {
-      const now = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const amp = audioCtx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(startFreq, now);
-      osc.frequency.exponentialRampToValueAtTime(endFreq, now + duration);
-      amp.gain.setValueAtTime(0.0001, now);
-      amp.gain.exponentialRampToValueAtTime(gain, now + 0.02);
-      amp.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-      osc.connect(amp).connect(audioCtx.destination);
-      osc.start(now);
-      osc.stop(now + duration + 0.03);
-    }
-
-    function playPop() { chirp({ startFreq: 420, endFreq: 180, type: "triangle", duration: 0.13, gain: 0.12 }); }
-    function playConfettiPop() { chirp({ startFreq: 760, endFreq: 310, type: "square", duration: 0.1, gain: 0.1 }); }
-
-    function playYay() {
-      const notes = [523, 659, 784, 988];
-      notes.forEach((freq, i) => {
-        setTimeout(() => chirp({ startFreq: freq, endFreq: freq * 1.03, duration: 0.15, gain: 0.1 }), i * 120);
-      });
-    }
-
-    let heartbeatTimer;
-    function startHeartbeat() {
-      if (heartbeatTimer) return;
-      const beat = () => {
-        chirp({ startFreq: 110, endFreq: 80, duration: 0.11, type: "sine", gain: 0.16 });
-        setTimeout(() => chirp({ startFreq: 90, endFreq: 64, duration: 0.11, type: "sine", gain: 0.13 }), 170);
-      };
-      beat();
-      heartbeatTimer = setInterval(beat, 900);
-    }
-
-    function stopHeartbeat() {
-      if (!heartbeatTimer) return;
-      clearInterval(heartbeatTimer);
-      heartbeatTimer = null;
-    }
-
-    const confettiCanvas = document.getElementById("confettiCanvas");
-
-    function resizeConfettiCanvas() {
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
-      confettiCanvas.width = Math.floor(window.innerWidth * dpr);
-      confettiCanvas.height = Math.floor(window.innerHeight * dpr);
-      confettiCanvas.style.width = "100vw";
-      confettiCanvas.style.height = "100vh";
-    }
-
-    resizeConfettiCanvas();
-    window.addEventListener("resize", resizeConfettiCanvas);
-    window.addEventListener("orientationchange", () => setTimeout(resizeConfettiCanvas, 150));
-
-    const confettiInstance = confetti.create(confettiCanvas, {
-      resize: false,
-      useWorker: true
-    });
-
-    function fullScreenConfetti() {
-      const end = Date.now() + 1600;
-
-      (function frame() {
-        confettiInstance({
-          particleCount: 12,
-          spread: 90,
-          startVelocity: 45,
-          ticks: 180,
-          origin: { x: Math.random(), y: Math.random() * 0.3 }
-        });
-        playConfettiPop();
-        if (Date.now() < end) requestAnimationFrame(frame);
-      })();
-
-      setTimeout(() => {
-        confettiInstance({
-          particleCount: 300,
-          spread: 140,
-          startVelocity: 60,
-          ticks: 220,
-          origin: { x: 0.5, y: 0.55 }
-        });
-      }, 300);
-    }
-
-    let yesScale = 1;
-    function growYes() {
-      yesScale = Math.min(2.2, yesScale + 0.1);
-      yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
-    }
-
-    function clamp(n, min, max) {
-      return Math.max(min, Math.min(max, n));
-    }
-
-    function moveNo(px, py) {
-      const z = zone.getBoundingClientRect();
-      const b = noBtn.getBoundingClientRect();
-
-      let dx = (b.left + b.width / 2) - px;
-      let dy = (b.top + b.height / 2) - py;
-      let mag = Math.hypot(dx, dy) || 1;
-      dx /= mag;
-      dy /= mag;
-
-      let newLeft = (b.left - z.left) + dx * 150;
-      let newTop  = (b.top - z.top) + dy * 150;
-
-      newLeft = clamp(newLeft, 0, z.width - b.width);
-      newTop  = clamp(newTop, 0, z.height - b.height);
-
-      noBtn.style.left = newLeft + "px";
-      noBtn.style.top = newTop + "px";
-      noBtn.style.transform = "none";
-
-      growYes();
-    }
-
-    zone.addEventListener("pointermove", e => {
-      const b = noBtn.getBoundingClientRect();
-      const d = Math.hypot(
-        (b.left + b.width / 2) - e.clientX,
-        (b.top + b.height / 2) - e.clientY
-      );
-      if (d < 140) moveNo(e.clientX, e.clientY);
-    });
-
-    noBtn.addEventListener("click", e => {
-      e.preventDefault();
-      audioCtx.resume();
-      playPop();
-      startHeartbeat();
-
-      noStage = (noStage + 1) % noStages.length;
-      noBtn.textContent = noStages[noStage];
-      hint.textContent = noStage === 1
-        ? "The monkey is plotting something... 🐒"
-        : noStage === 2
-          ? "Too late 😈 monkey stole the heart!"
-          : "Nope... try that again 😌";
-
-      if (noStage >= 1) {
-        heartGroup.classList.add("stolen");
-        monkeyBlush.classList.add("active");
-      }
-
-      const z = zone.getBoundingClientRect();
-      moveNo(z.left + z.width * Math.random(), z.top + z.height * Math.random());
-    });
-
-    yesBtn.addEventListener("click", () => {
-      audioCtx.resume();
-      playYay();
-      stopHeartbeat();
-      zone.style.display = "none";
-      hint.style.display = "none";
-      result.style.display = "block";
-      resizeConfettiCanvas();
-      fullScreenConfetti();
-    });
-  </script>
-</body>
-</html>
+diff --git a/index.html b/index.html
+index d51339615da5a9eff9c66448b4636130530f1ba6..1e7a3b044df7776edb9b368e58a9a0be13a991d6 100644
+--- a/index.html
++++ b/index.html
+@@ -111,87 +111,101 @@
+       animation: pop .35s ease;
+     }
+ 
+     .result h2 {
+       font-size: clamp(30px, 4.5vw, 46px);
+       margin: 10px 0;
+     }
+ 
+     .fireworks {
+       width: min(380px, 90vw);
+       margin: 0 auto;
+       display: block;
+     }
+ 
+     @keyframes pop {
+       from { transform: scale(.96); opacity: 0; }
+       to { transform: scale(1); opacity: 1; }
+     }
+   </style>
+ </head>
+ 
+ <body>
+   <canvas id="confettiCanvas"></canvas>
+ 
+   <main class="card">
+-    <!-- ANIMAL WITH HEART -->
+-    <svg class="art" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg">
+-      <defs>
+-        <linearGradient id="fur" x1="0" x2="1">
+-          <stop offset="0" stop-color="#f7c7a1"/>
+-          <stop offset="1" stop-color="#f2a97b"/>
+-        </linearGradient>
+-        <linearGradient id="heart" x1="0" x2="1">
+-          <stop offset="0" stop-color="#ff4d7d"/>
+-          <stop offset="1" stop-color="#ff1f68"/>
+-        </linearGradient>
+-      </defs>
+-
+-      <path d="M250 50 C250 33 270 25 282 38
+-               C294 25 314 33 314 50
+-               C314 78 282 92 282 106
+-               C282 92 250 78 250 50Z"
+-            fill="url(#heart)"/>
+-
+-      <path d="M90 120 C90 70 140 40 190 60
+-               C240 40 290 70 290 120
+-               C290 180 240 210 190 210
+-               C140 210 90 180 90 120Z"
+-            fill="url(#fur)"/>
+-
+-      <path d="M110 92 L95 55 L140 78 Z" fill="#f2a97b"/>
+-      <path d="M270 92 L285 55 L240 78 Z" fill="#f2a97b"/>
+-
+-      <circle cx="160" cy="130" r="8"/>
+-      <circle cx="220" cy="130" r="8"/>
+-
+-      <path d="M190 144 C186 144 182 148 182 152
+-               C182 160 190 164 190 170
+-               C190 164 198 160 198 152
+-               C198 148 194 144 190 144Z"
+-            fill="#ff7aa2"/>
+-    </svg>
++    <!-- MONKEY + PIG WITH HEART -->
++    <svg class="art" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg">
++      <defs>
++        <linearGradient id="monkeyFur" x1="0" x2="1">
++          <stop offset="0" stop-color="#b8794f"/>
++          <stop offset="1" stop-color="#99613f"/>
++        </linearGradient>
++        <linearGradient id="pigSkin" x1="0" x2="1">
++          <stop offset="0" stop-color="#ffbfd2"/>
++          <stop offset="1" stop-color="#ffa9c3"/>
++        </linearGradient>
++        <linearGradient id="heart" x1="0" x2="1">
++          <stop offset="0" stop-color="#ff4d7d"/>
++          <stop offset="1" stop-color="#ff1f68"/>
++        </linearGradient>
++      </defs>
++
++      <path d="M140 40 C140 20 162 10 175 28
++               C188 10 210 20 210 40
++               C210 65 175 84 175 100
++               C175 84 140 65 140 40Z"
++            fill="url(#heart)"/>
++
++      <!-- Monkey (left) -->
++      <circle cx="110" cy="118" r="28" fill="url(#monkeyFur)"/>
++      <circle cx="74" cy="116" r="14" fill="url(#monkeyFur)"/>
++      <circle cx="146" cy="116" r="14" fill="url(#monkeyFur)"/>
++      <circle cx="78" cy="116" r="8" fill="#f4cfb2"/>
++      <circle cx="142" cy="116" r="8" fill="#f4cfb2"/>
++      <ellipse cx="110" cy="125" rx="19" ry="16" fill="#f4cfb2"/>
++      <circle cx="101" cy="118" r="3.6" fill="#2d1f1a"/>
++      <circle cx="119" cy="118" r="3.6" fill="#2d1f1a"/>
++      <ellipse cx="110" cy="128" rx="5.8" ry="4.5" fill="#7a3d2f"/>
++      <path d="M103 136 Q110 142 117 136" fill="none" stroke="#7a3d2f" stroke-width="2.4" stroke-linecap="round"/>
++
++      <!-- Pig (right) -->
++      <circle cx="210" cy="120" r="30" fill="url(#pigSkin)"/>
++      <polygon points="186,96 176,76 198,88" fill="#ffa9c3"/>
++      <polygon points="234,96 244,76 222,88" fill="#ffa9c3"/>
++      <circle cx="200" cy="116" r="3.5" fill="#2d1f1a"/>
++      <circle cx="220" cy="116" r="3.5" fill="#2d1f1a"/>
++      <ellipse cx="210" cy="129" rx="13" ry="9.5" fill="#ff8fb2"/>
++      <ellipse cx="205" cy="129" rx="2.2" ry="3" fill="#db5f8c"/>
++      <ellipse cx="215" cy="129" rx="2.2" ry="3" fill="#db5f8c"/>
++
++      <!-- tiny shared blush accents -->
++      <ellipse cx="92" cy="131" rx="5" ry="3" fill="#ff9bb6" opacity="0.75"/>
++      <ellipse cx="128" cy="131" rx="5" ry="3" fill="#ff9bb6" opacity="0.75"/>
++      <ellipse cx="192" cy="134" rx="5" ry="3" fill="#ff7aa2" opacity="0.75"/>
++      <ellipse cx="228" cy="134" rx="5" ry="3" fill="#ff7aa2" opacity="0.75"/>
++    </svg>
+ 
+     <h1>Mithun will you be my valentine?</h1>
+ 
+     <section class="button-zone" id="zone">
+       <button id="yesBtn">Yes</button>
+       <button id="noBtn">No</button>
+     </section>
+ 
+     <!-- HINT -->
+     <div class="hint" id="hint">“No” is not an option 🙄</div>
+ 
+     <section class="result" id="result">
+       <h2>YAYYY!🥳</h2>
+       <img
+         class="fireworks"
+         src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcTRycDh4NHQ3aTh6NWFhM3NkMTZ3eWhlc3NidzdwY2FscTVxMXRobiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/IzXiddo2twMmdmU8Lv/giphy.gif"
+         alt="Fireworks"
+       />
+     </section>
+   </main>
+ 
+   <script>
+     const zone = document.getElementById("zone");
+     const yesBtn = document.getElementById("yesBtn");
+     const noBtn = document.getElementById("noBtn");
